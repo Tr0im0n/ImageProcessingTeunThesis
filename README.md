@@ -1,1 +1,1 @@
-# Image_Processing_for_Teun-s_Thesis
+# Image Processing for Teun's Thesis
