@@ -1,8 +1,11 @@
+import os
+
 from source.bounds_finder import BoundsFinder
 from source.img import Img
 
 
 def main():
+    os.chdir(r"../data")
     import_file_name = "test5.PNG"
     image_array = Img.load_from_png(import_file_name)
     d2_array = Img.d3_to_d2(image_array)
@@ -11,7 +14,9 @@ def main():
     bounds = boundsfinder.get_bounds()
 
     clipped_array = Img.clip(d2_array, bounds)
-
+    d3_array = Img.d2_to_d3(clipped_array)
+    export_file_name = "test1.png"
+    Img.save_as_png(d3_array, export_file_name)
 
     # to_csv(image_array)
     # mc = majority_color(image_array, 4)
