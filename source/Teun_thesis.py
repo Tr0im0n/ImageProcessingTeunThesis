@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import PIL.Image
 import numpy as np
-import scipy.stats
 
 
 bounds = (620, 1579, 1445, 3053)
