@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import PIL.Image
 import numpy as np
 
+from source.Teun_thesis import BoundsFinder
 from source.color import Color
 
 
@@ -34,35 +35,56 @@ class Img:
         np.savetxt(file_name, image_array, delimiter=',', fmt='%d')
 
     @staticmethod
-    def _test15(array):     # _ means only used within this class
+    def _test15(array, first_pixel):     # _ means only used within this class
         if np.array_equal(array, Color.BLACK):
             return 0
         elif np.array_equal(array, Color.WHITE):
             return 1
+        elif np.array_equal(array, first_pixel):
+            return 3
         else:
             return 2
 
     @staticmethod
-    def d3_to_d2(image_array):
+    def d3_to_d2(image_array: np.array):
+        # shape = image_array.shape
+        # reshaped_array = image_array.reshape(-1, 3)     # sort of flatten
+        # remapped = map(Img._test15, reshaped_array)
+        # remapped_list = list(remapped)
+        # remapped_array = np.array(remapped_list)
+        # return remapped_array.reshape(shape[:2])
+        first_pixel = image_array[0, 0]
         shape = image_array.shape
-        reshaped_array = image_array.reshape(-1, 3)     # sort of flatten
-        remapped = map(Img._test15, reshaped_array)
-        remapped_list = list(remapped)
-        remapped_array = np.array(remapped_list)
-        return remapped_array.reshape(shape[:2])
+        reshaped_array = image_array.reshape(-1, 3)  # Flatten the image_array
+        remapped_array = Img._test15(reshaped_array, first_pixel)  # Apply _test15 function directly
+        return remapped_array.reshape(shape[:2])  # Reshape back to 2D array
 
     @staticmethod
     def d2_to_d3(array):
         """Trying to export a csv to a png"""
         old_shape = array.shape
         new_shape = (*old_shape, 3)
-        ans = np.zeros(new_shape, dtype=np.uint8)     # Color.WHITE
-        for row in range(new_shape[0]):
-            for col in range(new_shape[1]):
-                if 1 == array[row, col]:
-                    ans[row, col] = [255, 255, 255]     # Color.BLACK
-                elif 2 == array[row, col]:
-                    ans[row, col] = [254, 1, 1]     # Color.RED
+        ans = np.zeros(new_shape, dtype=np.uint8)   # Color.WHITE
+        ans[np.where(array == 1)] = [255, 255, 255]     # Color.BLACK
+        ans[np.where(array == 2)] = [254, 1, 1]     # Color.RED
+        # for row in range(new_shape[0]):
+        #     for col in range(new_shape[1]):
+        #         if 1 == array[row, col]:
+        #             ans[row, col] = [255, 255, 255]
+        #         elif 2 == array[row, col]:
+        #             ans[row, col] = [254, 1, 1]
         return ans
 
+    @staticmethod
+    def clip(image_array, bounds):
+        ub, lb, db, rb = bounds
+        return image_array[ub:db, lb:rb, :3]
 
+    @staticmethod
+    def replace_first_pixel(image_array):
+        """Replace all red (first pixel) with black."""
+        image_array = image_array.copy()
+        first_pixel = image_array[0, 0]  # [237  28  36]
+        mask = np.all(np.array_equal(image_array, first_pixel), axis=-1)
+        image_array[mask] = Color.BLACK
+        return image_array

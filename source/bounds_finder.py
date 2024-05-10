@@ -9,33 +9,35 @@ class BoundsFinder:
     """
     found_bounds = (620, 1579, 1445, 3053)
 
-    def __init__(self, image_array: np.array):
+    def __init__(self, image_array: np.array, boundary_pixel):
         self.image_array = image_array
         self.shape = self.image_array.shape
+        self.boundary_pixel = boundary_pixel
 
     def first_black_row(self):
         for i in range(self.shape[0]):  # Iterate over rows
             for j in range(self.shape[1]):  # Iterate over columns
-                if np.array_equal(self.image_array[i, j], Color.BLACK):
+                if np.array_equal(self.image_array[i, j], self.boundary_pixel):
                     return i
 
     def first_black_col(self):
         for j in range(self.shape[1]):  # Iterate over columns
             for i in range(self.shape[0]):  # Iterate over rows
-                if np.array_equal(self.image_array[i, j], Color.BLACK):
+                if np.array_equal(self.image_array[i, j], self.boundary_pixel):
                     return j
 
     def last_black_row(self):
         for i in range(self.shape[0] - 1, 0, -1):  # Iterate over rows in reverse
             for j in range(self.shape[1]):  # Iterate over columns
-                if np.array_equal(self.image_array[i, j], Color.BLACK):
+                if np.array_equal(self.image_array[i, j], self.boundary_pixel):
                     return i
 
     def last_black_col(self):
         for j in range(self.shape[1] - 1, 0, -1):  # Iterate over columns in reverse
             for i in range(self.shape[0]):  # Iterate over rows
-                if np.array_equal(self.image_array[i, j], Color.BLACK):
+                if np.array_equal(self.image_array[i, j], self.boundary_pixel):
                     return j
 
     def get_bounds(self):
         return self.first_black_row(), self.first_black_col(), self.last_black_row(), self.last_black_col()
+
