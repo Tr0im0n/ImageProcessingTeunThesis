@@ -5,17 +5,20 @@ from source.img import Img
 
 
 def main():
-    os.chdir(r"../data")
-    import_file_name = "test5.PNG"
+    os.chdir(r"../old_data")
+    import_file_name = "test.PNG"
     image_array = Img.load_from_png(import_file_name)
-    d2_array = Img.d3_to_d2(image_array)
+    rgb_array = image_array[:, :, :3]
+    first_pixel = rgb_array[0, 0]
+    d2_array = Img.d3_to_d2(rgb_array, first_pixel)
+    Img.show(d2_array)
 
     boundsfinder = BoundsFinder(image_array, 3)
     bounds = boundsfinder.get_bounds()
 
     clipped_array = Img.clip(d2_array, bounds)
     d3_array = Img.d2_to_d3(clipped_array)
-    export_file_name = "test1.png"
+    export_file_name = "test7.png"
     Img.save_as_png(d3_array, export_file_name)
 
     # to_csv(image_array)

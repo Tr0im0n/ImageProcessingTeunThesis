@@ -1,8 +1,7 @@
+
 import matplotlib.pyplot as plt
 import PIL.Image
 import numpy as np
-
-from source.Teun_thesis import BoundsFinder
 from source.color import Color
 
 
@@ -46,7 +45,7 @@ class Img:
             return 2
 
     @staticmethod
-    def d3_to_d2(image_array: np.array):
+    def d3_to_d2_old(image_array: np.array):
         # shape = image_array.shape
         # reshaped_array = image_array.reshape(-1, 3)     # sort of flatten
         # remapped = map(Img._test15, reshaped_array)
@@ -58,6 +57,21 @@ class Img:
         reshaped_array = image_array.reshape(-1, 3)  # Flatten the image_array
         remapped_array = Img._test15(reshaped_array, first_pixel)  # Apply _test15 function directly
         return remapped_array.reshape(shape[:2])  # Reshape back to 2D array
+
+    @staticmethod
+    def d3_to_d2(array, first_pixel=None):
+        """Perform element-wise operation on input array."""
+        ans = np.zeros(array.shape[:2], dtype=int)  # Create an array to store the result
+        # Apply the logic element-wise using vectorized operations
+        # ans[np.array_equal(array, Color.BLACK)] = 0
+        ans[np.all(array == Color.WHITE, -1)] = 1
+        if first_pixel is not None:
+            ans[np.all(array == first_pixel, axis=-1)] = 3
+            ans[~(np.all(array == Color.BLACK, -1) | np.all(array == Color.WHITE, -1) |
+                  np.all(array == first_pixel, -1))] = 2
+        else:
+            ans[~(np.all(array == Color.BLACK, -1) | np.all(array == Color.WHITE, -1))] = 2
+        return ans
 
     @staticmethod
     def d2_to_d3(array):
@@ -78,7 +92,7 @@ class Img:
     @staticmethod
     def clip(image_array, bounds):
         ub, lb, db, rb = bounds
-        return image_array[ub:db, lb:rb, :3]
+        return image_array[ub:db, lb:rb]
 
     @staticmethod
     def replace_first_pixel(image_array):
